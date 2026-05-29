@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         try {
-          const res = await axios.get('/api/auth/profile');
+          const res = await axios.get('https://dermascan-ai-a2k5.onrender.com/api/auth/profile');
           setUser(res.data);
           console.log('[AUTH] Persistent session verified successfully');
         } catch (error) {

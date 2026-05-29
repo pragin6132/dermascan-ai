@@ -28,7 +28,7 @@ export const Dashboard = ({ onScanSuccess }) => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get('/api/scans/history');
+        const res = await axios.get('https://dermascan-ai-a2k5.onrender.com/api/scans/history');
         const activeCount = res.data.filter(s => s.severity === 'High' || s.severity === 'Medium').length;
         setStats({
           totalScans: res.data.length,
@@ -143,7 +143,7 @@ export const Dashboard = ({ onScanSuccess }) => {
 
     try {
       // POST image buffer payload
-      const res = await axios.post('/api/scans/analyze', formData, {
+      const res = await axios.post('https://dermascan-ai-a2k5.onrender.com/api/scans/analyze', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
