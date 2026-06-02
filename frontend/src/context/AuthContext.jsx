@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         try {
-          const res = await axios.get('https://dermascan-ai-a2k5.onrender.com/api/auth/profile');
+          const res = await axios.get('/api/auth/profile');
           setUser(res.data);
           console.log('[AUTH] Persistent session verified successfully');
         } catch (error) {
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
   const signup = async (name, email, password) => {
     setLoading(true);
     try {
-      const res = await axios.post('https://dermascan-ai-a2k5.onrender.com/api/auth/signup',{ name, email, password });
+      const res = await axios.post('/api/auth/signup', { name, email, password });
       const { token, ...userData } = res.data;
       
       localStorage.setItem('token', token);
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      const res = await axios.post( 'https://dermascan-ai-a2k5.onrender.com/api/auth/login',{ email, password });
+      const res = await axios.post('/api/auth/login', { email, password });
       const { token, ...userData } = res.data;
       
       localStorage.setItem('token', token);

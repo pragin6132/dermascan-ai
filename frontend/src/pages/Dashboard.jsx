@@ -28,7 +28,7 @@ export const Dashboard = ({ onScanSuccess }) => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get('https://dermascan-ai-a2k5.onrender.com/api/scans/history');
+        const res = await axios.get('/api/scans/history');
         const activeCount = res.data.filter(s => s.severity === 'High' || s.severity === 'Medium').length;
         setStats({
           totalScans: res.data.length,
@@ -139,15 +139,16 @@ export const Dashboard = ({ onScanSuccess }) => {
     setError('');
 
     const formData = new FormData();
-    formData.append('image', imageFile);
+    formData.append('file', imageFile);
 
     try {
-      // POST image buffer payload
-      const res = await axios.post('https://dermascan-ai-a2k5.onrender.com/api/scans/analyze', formData, {
+      const res = await axios.post('http://127.0.0.1:8000/predict', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
+
+      console.log("FASTAPI RESPONSE:", res.data);
 
       // Celebrate success!
       confetti({
@@ -160,12 +161,15 @@ export const Dashboard = ({ onScanSuccess }) => {
       // Pass result up to central page router
       setTimeout(() => {
         setIsScanning(false);
-        onScanSuccess(res.data);
+        onScanSuccess({
+          ...res.data,
+          imageUrl: imagePreview // Keep the uploaded image visible in ScanResult
+        });
       }, 500);
 
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'AI engine failed to analyze skin image. Please try again.');
+      setError(err.response?.data?.error || err.response?.data?.detail || err.response?.data?.message || 'AI engine failed to analyze skin image. Please try again.');
       setIsScanning(false);
     }
   };

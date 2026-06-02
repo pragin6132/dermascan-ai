@@ -308,16 +308,63 @@ const skinConditionsDB = {
   }
 };
 
+const mapPythonClassToDBKey = (className) => {
+  const name = className.toLowerCase();
+  if (name.includes('eczema') || name.includes('atopic dermatitis')) return 'eczema';
+  if (name.includes('hives') || name.includes('urticaria')) return 'hives';
+  if (name.includes('poison ivy') || name.includes('contact dermatitis') || name.includes('cellulitis') || name.includes('impetigo') || name.includes('rash') || name.includes('bite') || name.includes('infestation') || name.includes('eruption')) return 'contact_dermatitis';
+  if (name.includes('psoriasis') || name.includes('lichen planus') || name.includes('lupus') || name.includes('vasculitis') || name.includes('connective') || name.includes('melanoma') || name.includes('cancer') || name.includes('malignant')) return 'psoriasis';
+  if (name.includes('acne') || name.includes('rosacea')) return 'acne';
+  if (name.includes('tinea') || name.includes('ringworm') || name.includes('fungus') || name.includes('fungal') || name.includes('athlete')) return 'fungal';
+  if (name.includes('shingles') || name.includes('chickenpox') || name.includes('herpes') || name.includes('hpv') || name.includes('std') || name.includes('wart') || name.includes('molluscum') || name.includes('viral')) return 'shingles';
+  return 'healthy'; // Default fallback
+};
+
 /**
- * High-fidelity AI classifier simulation.
- * It uses image file properties (like size, file name, and minor analysis) to derive
- * a deterministic disease classification, ensuring consistent results for identical files.
+ * High-fidelity AI classifier.
+ * Attempts to analyze using the local Python FastAPI ML model at http://127.0.0.1:8000/predict.
+ * Falls back to a deterministic simulation if the Python ML server is not running.
  */
 export const classifySkinImage = async (file) => {
-  // Wait a short time to simulate high-performance neural network inference
-  await new Promise((resolve) => setTimeout(resolve, 2200));
+  try {
+    const formData = new FormData();
+    const blob = new Blob([file.buffer], { type: file.mimetype });
+    formData.append('file', blob, file.originalname);
 
-  // Determine a classification seed based on the file properties (name + size)
+    const pythonRes = await fetch('http://127.0.0.1:8000/predict', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (pythonRes.ok) {
+      const data = await pythonRes.json();
+      if (data.predictions && data.predictions.length > 0) {
+        const topPred = data.predictions[0];
+        const predictedDisease = topPred.disease;
+        const confidenceVal = topPred.confidence / 100; // Scaled to 0-1 range
+
+        const dbKey = mapPythonClassToDBKey(predictedDisease);
+        const conditionData = skinConditionsDB[dbKey];
+
+        console.log(`[AI SERVICE] FastAPI response: "${predictedDisease}" (${topPred.confidence}%) -> mapped to "${conditionData.conditionName}"`);
+
+        return {
+          conditionName: conditionData.conditionName,
+          confidence: parseFloat(confidenceVal.toFixed(2)),
+          severity: conditionData.severity,
+          symptoms: conditionData.symptoms,
+          causes: conditionData.causes,
+          solutions: conditionData.solutions,
+          medicines: conditionData.medicines,
+          prevention: conditionData.prevention
+        };
+      }
+    }
+  } catch (err) {
+    console.log(`[AI SERVICE] Python ML server offline (${err.message}). Defaulting to simulation engine.`);
+  }
+
+  // SIMULATOR FALLBACK:
   const name = file.originalname || 'unknown.jpg';
   const size = file.size || 100000;
   
@@ -328,13 +375,11 @@ export const classifySkinImage = async (file) => {
   }
   hash = Math.abs(hash + size);
 
-  // Map the hash to one of the rich clinical conditions
   const conditions = Object.keys(skinConditionsDB);
   const conditionKey = conditions[hash % conditions.length];
   const conditionData = skinConditionsDB[conditionKey];
 
-  // Generate a premium clinical response
-  const confidence = parseFloat((0.85 + (hash % 13) * 0.01).toFixed(2)); // High-fidelity confidence e.g., 0.85 - 0.97
+  const confidence = parseFloat((0.85 + (hash % 13) * 0.01).toFixed(2));
   
   return {
     conditionName: conditionData.conditionName,

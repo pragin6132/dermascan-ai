@@ -12,7 +12,7 @@ export const History = ({ onViewDetails, onNavigateScan }) => {
   const fetchHistory = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('https://dermascan-ai-a2k5.onrender.com/api/scans/history');
+      const res = await axios.get('/api/scans/history');
       setHistoryLogs(res.data);
     } catch (err) {
       console.error(err);

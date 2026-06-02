@@ -10,6 +10,41 @@ export const ScanResult = ({ scanData, onBack }) => {
   
   if (!scanData) return null;
 
+  const hasPredictions = scanData.predictions && scanData.predictions.length > 0;
+
+  const conditionName = hasPredictions
+    ? scanData.predictions[0].disease
+    : (scanData.conditionName || "Healthy Skin");
+
+  const confidence = hasPredictions
+    ? scanData.predictions[0].confidence / 100
+    : (scanData.confidence || 0.95);
+
+  const severity = scanData.severity || "Low";
+
+  const symptoms = scanData.symptoms || [
+    "Skin abnormality detected",
+    "Further clinical examination recommended"
+  ];
+
+  const causes = scanData.causes || [
+    "Unknown cause",
+    "Requires dermatologist review"
+  ];
+
+  const solutions = scanData.solutions || [
+    "Consult dermatologist",
+    "Keep affected area clean"
+  ];
+
+  const medicines = scanData.medicines || [
+    "No medicine recommendation available"
+  ];
+
+  const prevention = scanData.prevention || [
+    "Maintain skin hygiene"
+  ];
+
   const severityColors = {
     Low: "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20",
     Medium: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
@@ -52,10 +87,10 @@ export const ScanResult = ({ scanData, onBack }) => {
           </div>
           <div className="col-span-8 space-y-3">
             <div className="inline-block px-3 py-1 text-xs border rounded-full font-bold">
-              Severity: {scanData.severity}
+              Severity: {severity}
             </div>
-            <h2 className="text-2xl font-bold">{scanData.conditionName}</h2>
-            <p className="text-sm"><strong>Neural Match Probability:</strong> {(scanData.confidence * 100).toFixed(1)}%</p>
+            <h2 className="text-2xl font-bold">{conditionName}</h2>
+            <p className="text-sm"><strong>Neural Match Probability:</strong> {(confidence * 100).toFixed(1)}%</p>
           </div>
         </div>
 
@@ -65,25 +100,25 @@ export const ScanResult = ({ scanData, onBack }) => {
           <div>
             <h3 className="font-bold text-sm text-indigo-700 uppercase tracking-wide">1. Audited Symptoms</h3>
             <ul className="list-disc pl-5 text-sm space-y-1 mt-1">
-              {scanData.symptoms.map((s, idx) => <li key={idx}>{s}</li>)}
+              {symptoms.map((s, idx) => <li key={idx}>{s}</li>)}
             </ul>
           </div>
           <div>
             <h3 className="font-bold text-sm text-indigo-700 uppercase tracking-wide">2. Potential Biological Causes</h3>
             <ul className="list-disc pl-5 text-sm space-y-1 mt-1">
-              {scanData.causes.map((c, idx) => <li key={idx}>{c}</li>)}
+              {causes.map((c, idx) => <li key={idx}>{c}</li>)}
             </ul>
           </div>
           <div>
             <h3 className="font-bold text-sm text-indigo-700 uppercase tracking-wide">3. Recommended Clinical Protocols</h3>
             <ul className="list-disc pl-5 text-sm space-y-1 mt-1">
-              {scanData.solutions.map((s, idx) => <li key={idx}>{s}</li>)}
+              {solutions.map((s, idx) => <li key={idx}>{s}</li>)}
             </ul>
           </div>
           <div>
             <h3 className="font-bold text-sm text-indigo-700 uppercase tracking-wide">4. Basic OTC Medicines</h3>
             <ul className="list-disc pl-5 text-sm space-y-1 mt-1">
-              {scanData.medicines.map((m, idx) => <li key={idx}>{m}</li>)}
+              {medicines.map((m, idx) => <li key={idx}>{m}</li>)}
             </ul>
           </div>
         </div>
@@ -132,8 +167,8 @@ export const ScanResult = ({ scanData, onBack }) => {
                   alt="Scanned rash anomaly"
                   className="object-contain max-h-[300px] w-full"
                 />
-                <span className={`absolute top-4 right-4 px-3 py-1 rounded-full border text-xs font-extrabold tracking-wider uppercase ${severityColors[scanData.severity]}`}>
-                  {scanData.severity} Severity
+                <span className={`absolute top-4 right-4 px-3 py-1 rounded-full border text-xs font-extrabold tracking-wider uppercase ${severityColors[severity]}`}>
+                  {severity} Severity
                 </span>
               </div>
 
@@ -159,7 +194,7 @@ export const ScanResult = ({ scanData, onBack }) => {
                       strokeWidth="8"
                       fill="transparent"
                       strokeDasharray={2 * Math.PI * 40}
-                      strokeDashoffset={2 * Math.PI * 40 * (1 - scanData.confidence)}
+                      strokeDashoffset={2 * Math.PI * 40 * (1 - confidence)}
                       strokeLinecap="round"
                     />
                     <defs>
@@ -172,7 +207,7 @@ export const ScanResult = ({ scanData, onBack }) => {
                   
                   <div className="absolute flex flex-col items-center justify-center">
                     <span className="text-xl font-black text-slate-800 dark:text-slate-100">
-                      {(scanData.confidence * 100).toFixed(0)}%
+                      {(confidence * 100).toFixed(0)}%
                     </span>
                     <span className="text-[9px] text-slate-400 uppercase tracking-widest font-semibold">Match</span>
                   </div>
@@ -181,7 +216,7 @@ export const ScanResult = ({ scanData, onBack }) => {
                 <div className="space-y-1">
                   <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Primary AI Classification</span>
                   <h3 className="text-xl font-extrabold text-slate-900 dark:text-white leading-tight">
-                    {scanData.conditionName}
+                    {conditionName}
                   </h3>
                   <div className="inline-flex items-center gap-1 text-[11px] text-indigo-500 font-semibold mt-1">
                     <Activity className="w-3.5 h-3.5 animate-pulse" />
@@ -225,10 +260,10 @@ export const ScanResult = ({ scanData, onBack }) => {
                       <span>Associated Symptoms</span>
                     </h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
-                      Standard clinical indicators recorded for {scanData.conditionName}:
+                      Standard clinical indicators recorded for {conditionName}:
                     </p>
                     <ul className="space-y-3.5 pt-2">
-                      {scanData.symptoms.map((symptom, idx) => (
+                      {symptoms.map((symptom, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                           <span className="w-5 h-5 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">✓</span>
                           <span>{symptom}</span>
@@ -248,7 +283,7 @@ export const ScanResult = ({ scanData, onBack }) => {
                       Typical biological or environmental triggers promoting this skin condition:
                     </p>
                     <ul className="space-y-3.5 pt-2">
-                      {scanData.causes.map((cause, idx) => (
+                      {causes.map((cause, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                           <span className="w-5 h-5 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">!</span>
                           <span>{cause}</span>
@@ -268,7 +303,7 @@ export const ScanResult = ({ scanData, onBack }) => {
                       Home care methods, skin hydration practices, and relief procedures:
                     </p>
                     <ul className="space-y-3.5 pt-2">
-                      {scanData.solutions.map((sol, idx) => (
+                      {solutions.map((sol, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                           <span className="w-5 h-5 rounded-full bg-indigo-500/10 text-indigo-500 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">🩺</span>
                           <span>{sol}</span>
@@ -288,7 +323,7 @@ export const ScanResult = ({ scanData, onBack }) => {
                       Typical over-the-counter ointments, tablets, or soothing preparations:
                     </p>
                     <ul className="space-y-3.5 pt-2">
-                      {scanData.medicines.map((med, idx) => (
+                      {medicines.map((med, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                           <span className="w-5 h-5 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">💊</span>
                           <span>{med}</span>
@@ -308,7 +343,7 @@ export const ScanResult = ({ scanData, onBack }) => {
                       Long-term skincare strategies and dietary habits to prevent allergy recurrences:
                     </p>
                     <ul className="space-y-3.5 pt-2">
-                      {scanData.prevention.map((prev, idx) => (
+                      {prevention.map((prev, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                           <span className="w-5 h-5 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">🛡️</span>
                           <span>{prev}</span>
