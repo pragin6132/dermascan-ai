@@ -4,7 +4,6 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from PIL import Image
 import numpy as np
-import cv2
 import io
 
 app = FastAPI()
