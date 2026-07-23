@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 console.log("API URL =", import.meta.env.VITE_API_URL);
+console.log("Axios Base URL =", axios.defaults.baseURL);
 // Setup base URL for axios
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;// Handled by Vite dev server proxy
 
