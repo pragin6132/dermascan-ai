@@ -14,6 +14,7 @@ export const Auth = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("HANDLE SUBMIT CALLED");
     setError('');
     
     if (!email || !password || (!isLogin && !name)) {

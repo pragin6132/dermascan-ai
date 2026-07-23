@@ -88,8 +88,10 @@ const res = await axios.get(
 
   // Login Handler
   const login = async (email, password) => {
+    console.log("LOGIN FUNCTION CALLED");
     setLoading(true);
     try {
+      console.log("Sending login request...");
       const res = await axios.post(
   "https://dermascan-backend-86eu.onrender.com/api/auth/login",
   { email, password }
