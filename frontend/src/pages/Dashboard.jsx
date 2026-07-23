@@ -142,11 +142,16 @@ export const Dashboard = ({ onScanSuccess }) => {
     formData.append('file', imageFile);
 
     try {
-await axios.post("https://dermascan-ai-1-qzid.onrender.com/predict", formData, {
-      headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const res = await axios.post(
+  "https://dermascan-ai-1-qzid.onrender.com/predict",
+  formData,
+  {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  }
+);
+
 
       console.log("FASTAPI RESPONSE:", res.data);
 
