@@ -142,8 +142,8 @@ export const Dashboard = ({ onScanSuccess }) => {
     formData.append('file', imageFile);
 
     try {
-      const res = await axios.post('http://127.0.0.1:8000/predict', formData, {
-        headers: {
+await axios.post("https://dermascan-ai-1-qzid.onrender.com/predict", formData, {
+      headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
