@@ -1,0 +1,10 @@
+Dear Hiring Manager,
+
+I am a B.E. Computer Science and Engineering graduate with a strong interest in software development. I have been learning Java, Spring Boot, REST APIs, and backend development and am eager to start my career in the IT industry.
+
+I am a quick learner, passionate about technology, and committed to continuously improving my technical skills. I would appreciate the opportunity to contribute to your organization and grow as a software professional.
+
+Thank you for your time and consideration. I look forward to hearing from you.
+
+Sincerely,
+Pragin Barath

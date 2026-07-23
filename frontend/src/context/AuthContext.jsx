@@ -4,7 +4,7 @@ import axios from 'axios';
 const AuthContext = createContext();
 
 // Setup base URL for axios
-axios.defaults.baseURL = ''; // Handled by Vite dev server proxy
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;// Handled by Vite dev server proxy
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
